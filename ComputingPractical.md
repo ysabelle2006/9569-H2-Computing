@@ -302,7 +302,7 @@ def linearSearchMultiple(target,unsortedList):
 
 ### Binary Search
 
-Time Complexity: O(1) [minimum] & O(log2n) [maximum]
+Time Complexity: O(1) [minimum] & O(log n) [maximum]
 
 Note: Binary search only works for a sorted list
 <br>
@@ -471,7 +471,7 @@ def shift(arr,start,end):
 
 ### Quick Sort
 
-Time Complexity: O(n log2n) [minimum] & O(n^2) [maximum]
+Time Complexity: O(n log n) [minimum] & O(n^2) [maximum]
 
 #### Algorithm
 
@@ -565,7 +565,7 @@ def quickSortNIP(unsortedList):
 
 ### Merge Sort
 
-Time Complexity: O(n log2n) [minimum] & O(n log2n) [maximum]
+Time Complexity: O(n log n) [minimum] & O(n log n) [maximum]
 
 #### Algorithm
 
