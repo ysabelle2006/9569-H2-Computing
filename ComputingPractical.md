@@ -1431,6 +1431,22 @@ class BinarySearchTree():
             else:
                 self.addRecursive(data,ptr._left)
 
+    def count(self,ptr):
+        if ptr == None:
+            return 0
+        else:
+            return self.count(ptr._left) + self.count(ptr._right) + 1
+
+    def search(self,ptr,data):
+        if ptr == None:
+            return False
+        elif data < ptr._data:
+            return self.search(ptr._left,data)
+        elif data > ptr._data:
+            return self.search(ptr._right,data)
+        else:
+            return True
+        
     def inorder(self,ptr,out=[]):
         if ptr != None:
             self.inorder(ptr._left,out)
