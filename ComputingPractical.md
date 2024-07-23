@@ -1622,3 +1622,13 @@ app.run()
 ```
 
 ## HTML
+```
+<! DOCTYPE html>
+<html>
+    <head>
+        <title>My Website</title>
+        <link href="index.css" rel="stylesheet">
+        
+    </head>
+</html>
+```
