@@ -1627,8 +1627,48 @@ app.run()
 <html>
     <head>
         <title>My Website</title>
-        <link href="index.css" rel="stylesheet">
-        
+        <style>
+            body {
+                font-family: sans-serif;
+            }
+
+            table,th,td,tr {
+                border-collapse: collapse;
+                border: 1px solid black;
+            }
+            th {
+                font-weight: bold;
+            }
+            table {
+                width: 50%;
+            }
+        </style>
+
+        <!-- Alternatively: <link href="index.css" rel="stylesheet"> with css stylesheet in static -->
     </head>
+    <body>
+        <h1>My Website</h1>
+        <br>
+        <table>
+            <tr>
+                <th>Header 1</th>
+                <th>Header 2</th>
+                <th>Header 3</th>
+            </tr>
+            {% for row in data %}
+                <tr>
+                    <td>{{row["Head1"]}}</td>
+                    <td>{{row["Head2"]}}</td>
+                    <td>{{row["Head3"]}}</td>
+                </tr>
+            <!-- Possible to use {% break %} to break out of loop -->
+            {% endfor %}
+
+        </table>
+
+        {% if userid == 1 %}
+            <h2>Hi User 1</h2>
+        {% endif %}
+    </body>
 </html>
 ```
