@@ -259,6 +259,85 @@ deleted = col.delete_many({"status":"reject"})
 print(deleted.deleted_count)
 ```
 
+# Sqlite3
+
+## Setting up Database
+```
+import sqlite3
+
+# Creating database in .sql (ie not in Python - do not run this in Python)
+sql_statement = "CREATE DATABASE database"
+
+# In Python
+con = sqlite3.connect("database.db") # this creates the database if does not exist
+
+# useful when testing to prevent table already exists error
+con.execute("DROP TABLE IF EXISTS Student")
+
+# may use """ """ or use \ to break line when writing SQL statements
+con.execute("""CREATE TABLE Student(StudentID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, Name TEXT(200) NOT NULL,
+TeacherID INTEGER NOT NULL, FOREIGN KEY(TeacherID) REFERENCES Teacher(TeacherID))""")
+
+# use ? to substitute in the values to prevent SQL injection
+# if there is only 1 variable to sub in, still need to put , after the variable because tuple syntax
+con.execute("""INSERT INTO Student(Name, TeacherID) VALUES (?,?)""",(name,teacherID))
+
+con.commit() #needed when modifying table
+con.close()
+```
+
+## Inserting Documents (requires row ID)
+```
+import sqlite3
+
+con = sqlite3.connect("database.db")
+cur = con.cursor()
+cur.execute("""INSERT INTO Student(Name, TeacherID) VALUES (?,?)""",(name,teacherID))
+newest_insert = cur.lastrowid # also works for last updated row
+
+cur.close()
+con.commit()
+con.close()
+```
+
+## Selecting Documents
+
+### Without Cursor
+```
+import sqlite3
+
+con = sqlite3.connect("database.db")
+rows = con.execute("SELECT StudentID, Name FROM Student WHERE TeacherID = ?",(teacherID,))
+
+data = {}
+for row in rows: # even if there is only one value, also need to have for loop
+    data["studentid"] = row[0] # index of row follows the order of column name in SELECT statement
+    data["name"] = row[1]
+
+#ALTERNATIVELY:
+data = rows.fetchall() # will return a nested list (inner list is for all the columns and outer list is the records)
+
+con.close()
+# no commit needed as no changes made
+```
+
+### With Cursor (and row factory)
+```
+import sqlite3
+
+con = sqlite3.connect("database.db")
+con.row_factory = sqlite3.Row
+cur = con.cursor()
+rows = cur.execute("SELECT StudentID, Name FROM Student WHERE TeacherID = ?",(teacherID,))
+
+data = rows.fetchall() # will return a list of dictionaries (the dictionary key is the column name)
+
+cur.close()
+con.close()
+# no commit needed as no changes made
+
+```
+
 # Searching & Sorting Algorithms
 
 ## Searching
@@ -902,7 +981,7 @@ class Queue():
 # Using array
 
 class Queue():
-    def __init__(self,size=10,start=0,end=0):
+    def __init__(self,size=10,start=-1,end=-1):
         self._queue = [None] * size
         self._start = start
         self._end = end
@@ -920,11 +999,14 @@ class Queue():
         return str(self._queue)
     
     def enqueue(self,data):
-        if self._end == self._start and self._queue[self._start] != None:
-            print("Queue is full.")
+        if self.count() == self._size:
+            print("Queue is full")
+            return None
         else:
+            if self.count() == 0:
+                self._start += 1
+            self._end = (self._end + 1) % self._size
             self._queue[self._end] = data
-            self._end  = (self._end + 1) % self._size
 
     def dequeue(self):
         if self._queue[self._start] == None:
@@ -933,7 +1015,11 @@ class Queue():
         else:
             out = self._queue[self._start]
             self._queue[self._start] = None
-            self._start = (self._start + 1) % self._size
+            if self.count() == 0:
+                self._start = -1
+                self._end = -1
+            else:
+                self._start = (self._start + 1) % self._size
             return out
 ```
 
@@ -1009,7 +1095,7 @@ class Stack():
 class Stack():
     def __init__(self,size=10):
         self._size = size
-        self._top = self._size - 1
+        self._top = -1
         self._stack = [None] * self._size
 
     def __str__(self):
@@ -1024,28 +1110,23 @@ class Stack():
         return count
 
     def push(self,data):
-        if self._top == 0:
+        if self.count() == self._size:
             print("Stack is full")
         
         else:
-            if self._stack[self._top] != None:
-                self._top -= 1
-        
+            self._top += 1
             self._stack[self._top] = data
 
     def pop(self):
-        if self._stack[self._top] == None:
+        if self.count() == 0:
             print("Stack is empty")
             return None
-        
-        
-        out = self._stack[self._top]
-        self._stack[self._top] = None
 
-        if self._top != self._size - 1:
-            self._top += 1
-
-        return out
+        else:
+            out = self._stack[self._top]
+            self._stack[self._top] = None
+            self._top -= 1
+            return out
 ```
 <br>
 
@@ -1471,3 +1552,73 @@ class BinarySearchTree():
 
             return out
 ```
+
+# Flask & Web Applications
+
+## Setting Up Flask
+```
+from flask import *
+
+# If involves submission/showing of files (local)
+from werkzeug.utils import secure_filename
+import os
+
+app = Flask(__name__)
+
+# the first argument is the path of the website (use / for home page and change as needed)
+# second argument can be omitted if only GET but when POST is needed (for form submission) add to list as needed
+@app.route("/",methods=["GET"])
+def index():
+    return render_template("index.html") # instead of render_template can also be html code in string
+
+app.run()
+```
+
+## Flask Applications
+```
+from flask import *
+from werkzeug.utils import secure_filename
+import os
+
+app = Flask(__name__)
+
+@app.route("/",methods=["GET"])
+def index():
+    return render_template("index.html")
+
+# Using GET to pass in responses --> uses a form submission
+@app.route("/photos",methods=["GET"]) # <> denotes variable passed into the website using GET
+def photos(): #try to ensure function and website page is same name (makes it easier)
+    userid = request.args.get("userid")
+    filename = request.args.get("filename")
+
+# Using POST to pass in responses --> uses a form submission
+@app.route("/add",methods=["GET","POST"])
+def add():
+    if request.method == "GET": # request.method allows to check which method was used
+        return render_template("form.html")
+    else:
+        name = request.form["name"] # request.form is similar to a dictionary
+        age = request.form["age"]
+
+        #the second and third arguments are based on variables needed in the HTML using Jinja
+        return render_template("results.html",name=name,age=age)
+
+# Arguments from URL --> does not use form submission
+@app.route("/videos/<int:userid>/<filename>",methods=["GET"])
+def videos(userid,filename):
+    return render_template("videos.html",userid=userid,filename=filename)
+
+# Redirecting to another page
+@app.route("/media/<type>/<int:userid>/<filename>",methods=["GET"])
+def media(type,userid,filename):
+    if type == "videos":
+        return redirect(url_for("videos",userid=userid,filename=filename))
+    else:
+        return render_template("error.html")
+
+# Uploading & Downloading of Files (unlikely to come out but just in case)
+app.run()
+```
+
+## HTML
