@@ -1564,6 +1564,7 @@ from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__)
+# if need to change template directory use app = Flask(__name__,template_folder=new_dir)
 
 # the first argument is the path of the website (use / for home page and change as needed)
 # second argument can be omitted if only GET but when POST is needed (for form submission) add to list as needed
@@ -1587,7 +1588,7 @@ def index():
     return render_template("index.html")
 
 # Using GET to pass in responses --> uses a form submission
-@app.route("/photos",methods=["GET"]) # <> denotes variable passed into the website using GET
+@app.route("/photos",methods=["GET"]) # shown in url like ?name=hello&age=17
 def photos(): #try to ensure function and website page is same name (makes it easier)
     userid = request.args.get("userid")
     filename = request.args.get("filename")
@@ -1600,9 +1601,10 @@ def add():
     else:
         name = request.form["name"] # request.form is similar to a dictionary
         age = request.form["age"]
+        interest = request.form.getlist("interest") #used for checkbox (ie multi-select) 
 
         #the second and third arguments are based on variables needed in the HTML using Jinja
-        return render_template("results.html",name=name,age=age)
+        return render_template("results.html",name=name,age=age,interest=interest)
 
 # Arguments from URL --> does not use form submission
 @app.route("/videos/<int:userid>/<filename>",methods=["GET"])
@@ -1618,10 +1620,29 @@ def media(type,userid,filename):
         return render_template("error.html")
 
 # Uploading & Downloading of Files (unlikely to come out but just in case)
+@app.route("/photos/<filename>")
+def get_files(filename):
+    return send_from_directory(folder,filename)
+
+@app.route("/photos",methods=["GET","POST"])
+def photos():
+    files = []
+    for key in request.files:
+        file = request.files[key] #requests.files is a dictionary with the value being the file object
+        filename = secure_filename(file.filename) # prevents malicious filenames
+        file.save(path)
+        files.append(filename)
+
 app.run()
 ```
 
-## HTML
+## HTML - Basic
+
+All HTML files are to be in a templates folder (templates folder to be in same folder as python file)
+
+If there are CSS files, all css files and other files (e.g. images) are to be placed in static folder in same folder as python file
+
+
 ```
 <! DOCTYPE html>
 <html>
@@ -1644,7 +1665,7 @@ app.run()
             }
         </style>
 
-        <!-- Alternatively: <link href="index.css" rel="stylesheet"> with css stylesheet in static -->
+        <!-- Alternatively: <link href="index.css" rel="stylesheet"> with css stylesheet in static folder-->
     </head>
     <body>
         <h1>My Website</h1>
@@ -1669,6 +1690,47 @@ app.run()
         {% if userid == 1 %}
             <h2>Hi User 1</h2>
         {% endif %}
+
+        <!-- to show images from static folder-->
+        <img src={{url_for("static",filename=filename)}} alt="image description" width=50%>
+
+        <!-- to show images from another folder (may be a working folder aka changes and not static) -->
+        <img src={{url_for("get_file",filename=filename)}} alt="image description" width=50%>
+
+    </body>
+</html>
+```
+
+## HTML Form
+```
+<! DOCTYPE html>
+<html>
+    <head>
+        <title>My Website</title>
+        <style>
+            body {
+                font-family: sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>My Website</h1>
+        <form action={{url_for("form")}} method="post">
+            <label for="name">Name: </label>
+            <input type="text" id="name" name="name" value="hello">
+
+            <label for="gender">Gender: </label>
+            <input type="radio" name="gender" id="female" value="Female">
+            <input type="radio" name="gender" id="male" value="Male">
+            <input type="radio" name="gender" id="other" value="Others">
+
+            <!-- Similar style for checkbox (name: which question | value is placeholder/actual value | id is for CSS)-->
+
+            <input type="file" id="myfile" name="myfile">
+            <input type="file" id="myfile1" name="myfile1">
+
+            <input type="submit" value="Submit!">
+        </form>
     </body>
 </html>
 ```
