@@ -732,13 +732,9 @@ Algorithm:
 
 Special Cases:
 
-1. When LinkedList is empty, insertion is as root (ie self._root = newNode)
+1. When LinkedList is empty or index == 1, insertion is as root (ie self._root = newNode)
 
-2. If index == 1, change the root to newNode and set newNode._next as old root
-
-3. When insertion is at last index or greater, change the iterate to the last pointer and set ptr._next to newNode
-
-4. When insertion is done in between, iterate to the pointer before the index, set newNode._next to be ptr._next then set ptr._next to be newNode
+2. For other cases, iterate to the pointer before the index, set newNode._next to be ptr._next then set ptr._next to be newNode
 
 For insertion by data, it is possible that it comes out (e.g. insert words in alphabetical order), for these types, it has the same cases just that now it is less simple to tell if the node is supposed to be at which position, so prior checks are necessary
 
@@ -748,8 +744,7 @@ Special Cases:
 
 1. Deleting in an empty list
 2. Deleting the root of a list
-3. Deleting the last item of a list
-4. Deleting an item within a list
+3. Deleting other items in a list
 
 Note: for (1), it can be lumped together with error indexes such as indexes less than or equals to 0 and indexes greater than length of list
 
@@ -822,9 +817,7 @@ class LinkedList:
 
     def insert(self,data,index):
         new = Node(data)
-        if self._root == None:
-            self._root = new
-        elif index == 1:
+        if index == 1 or self._root == None:
             new._next = self._root
             self._root = new
         else:
@@ -837,10 +830,8 @@ class LinkedList:
             while  cur < index - 1:
                 ptr = ptr._next
                 cur += 1
-            
-            if index <= self.count():
-                new._next = ptr._next
-                
+
+            new._next = ptr._next
             ptr._next = new
 
     def search(self,data):
@@ -871,9 +862,7 @@ class LinkedList:
                 while cur != index-1:
                     ptr = ptr._next
                     cur += 1
-                if index == self.count():
-                    ptr._next = None
-                else:
+
                     ptr._next = ptr._next._next
 
     def deletebyData(self,data):
@@ -914,9 +903,7 @@ For Array:
 
 - Both end and start work on circular system (ie if there is space at the front the indexes are expected to go back to the front)
 
-- Check if empty: Check if element at start is empty
-
-- Check if full: Check if start = end and start is NOT empty
+- To check if full or empty, maintain a count
 
 <br>
 
@@ -985,45 +972,32 @@ class Queue():
 # Using array
 
 class Queue():
-    def __init__(self,size=10,start=-1,end=-1):
+    def __init__(self,size=10,start=0,end=-1):
         self._queue = [None] * size
         self._start = start
         self._end = end
         self._size = size
-
-    def count(self):
-        count = 0
-        for i in self._queue:
-            if i != None:
-                count += 1
-
-        return count
+        self._cursize = 0
     
     def __str__(self):
         return str(self._queue)
     
     def enqueue(self,data):
-        if self.count() == self._size:
+        if self._cursize == self._size:
             print("Queue is full")
             return None
         else:
-            if self.count() == 0:
-                self._start += 1
             self._end = (self._end + 1) % self._size
             self._queue[self._end] = data
 
     def dequeue(self):
-        if self._queue[self._start] == None:
+        if self._cursize == 0:
             print("Queue is empty.")
             return None
         else:
             out = self._queue[self._start]
             self._queue[self._start] = None
-            if self.count() == 0:
-                self._start = -1
-                self._end = -1
-            else:
-                self._start = (self._start + 1) % self._size
+            self._start = (self._start + 1) % self._size
             return out
 ```
 
@@ -1104,17 +1078,9 @@ class Stack():
 
     def __str__(self):
         return str(self._stack)
-    
-    def count(self):
-        count = 0
-        for i in self._stack:
-            if i != None:
-                count += 1
-
-        return count
 
     def push(self,data):
-        if self.count() == self._size:
+        if self._top == self._size - 1:
             print("Stack is full")
         
         else:
@@ -1122,7 +1088,7 @@ class Stack():
             self._stack[self._top] = data
 
     def pop(self):
-        if self.count() == 0:
+        if self._top == -1:
             print("Stack is empty")
             return None
 
