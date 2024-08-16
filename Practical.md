@@ -20,6 +20,7 @@ with open("file.txt","r") as fin:
 ```
 with open("file.csv","r") as fin:
     line = fin.readline()
+    data = []
     while line != "":
         line = fin.readline().strip()
         if line != "":
