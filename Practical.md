@@ -135,6 +135,7 @@ col.insert_many(data) # data is a list of dictionaries where each dictionary key
 # To print out new db records
 out = col.find({},{"_id":0})
 print(out)
+client.close()
 ```
 
 ## Reading information in a new DB
@@ -247,7 +248,9 @@ col.update_many({},{"$currentDate":{"fieldName":{"$type":"timestamp"}}})
 
 # To increase the value of a field by a certain amount
 numToIncrease = 1
-col.update_many({},{"$inc":{"fieldName":numToIncrease}}) 
+col.update_many({},{"$inc":{"fieldName":numToIncrease}})
+
+# no commit statement needed
 ```
 
 ## Deleting Documents
