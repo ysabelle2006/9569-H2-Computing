@@ -1685,7 +1685,7 @@ If there are CSS files, all css files and other files (e.g. images) are to be pl
     </head>
     <body>
         <h1>My Website</h1>
-        <form action={{url_for("form")}} method="post" enc-type="multipart/form-data">
+        <form action={{url_for("form")}} method="post" enctype="multipart/form-data">
             <label for="name">Name: </label>
             <input type="text" id="name" name="name" value="hello">
 
