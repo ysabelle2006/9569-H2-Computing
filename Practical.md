@@ -1689,10 +1689,18 @@ If there are CSS files, all css files and other files (e.g. images) are to be pl
             <label for="name">Name: </label>
             <input type="text" id="name" name="name" value="hello">
 
-            <label for="gender">Gender: </label>
+            <br>
+            <br>
+
+            <!-- label follows id of input, one label per input, name of all inputs of same group is same-->
+            <!-- value is what is returned when called for in program-->
+
             <input type="radio" name="gender" id="female" value="Female">
+            <label for="female">Female </label><br>
             <input type="radio" name="gender" id="male" value="Male">
+            <label for="male">Male </label><br>
             <input type="radio" name="gender" id="other" value="Others">
+            <label for="other">Others </label><br>
 
             <!-- Similar style for checkbox (name: which question | value is placeholder/actual value | id is for CSS)-->
 
