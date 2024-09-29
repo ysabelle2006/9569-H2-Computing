@@ -1628,13 +1628,13 @@ If there are CSS files, all css files and other files (e.g. images) are to be pl
                 border: 1px solid black;
                 margin-left: auto;
                 margin-right: auto;
-                text-align:center;
+                width: 50%;
             }
             th {
                 font-weight: bold;
             }
-            table {
-                width: 50%;
+            th,td {
+                text-align:center;
             }
         </style>
 
