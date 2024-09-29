@@ -1621,17 +1621,21 @@ If there are CSS files, all css files and other files (e.g. images) are to be pl
         <style>
             body {
                 font-family: sans-serif;
+                font-size: 10px;
+                background-color:green;
             }
 
             table,th,td,tr {
                 border-collapse: collapse;
                 border: 1px solid black;
-                margin-left: auto;
-                margin-right: auto;
+                margin:auto;
                 width: 50%;
             }
             th {
                 font-weight: bold;
+                text-decoration: underline;
+                font-style: italic;
+                color: blue;
             }
             th,td {
                 text-align:center;
