@@ -1626,6 +1626,9 @@ If there are CSS files, all css files and other files (e.g. images) are to be pl
             table,th,td,tr {
                 border-collapse: collapse;
                 border: 1px solid black;
+                margin-left: auto;
+                margin-right: auto;
+                text-align:center;
             }
             th {
                 font-weight: bold;
