@@ -297,7 +297,7 @@ import sqlite3
 con = sqlite3.connect("database.db")
 cur = con.cursor()
 cur.execute("""INSERT INTO Student(Name, TeacherID) VALUES (?,?)""",(name,teacherID))
-newest_insert = cur.lastrowid # also works for last updated row
+newest_insert = cur.lastrowid # also works for last updated row -> only for autoincrement columns
 
 cur.close()
 con.commit()
