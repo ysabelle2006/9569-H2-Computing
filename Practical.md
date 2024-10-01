@@ -472,7 +472,7 @@ def binarySearchMultiple(sortedList,target):
 
 def binarySearchSingle(sortedList,target):
     low = 0
-    high = len(sortedList) // 2 
+    high = len(sortedList) - 1
     while low <= high:
         mid = (low + high) // 2
         if sortedList[mid] == target:
